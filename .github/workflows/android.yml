@@ -1,0 +1,41 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Set up Android SDK
+        uses: actions/setup-android@v2
+        with:
+          sdk-platform: '29'
+          ndk-version: '21.3.6528147'
+
+      - name: Build and test on Android
+        run: |
+          ./gradlew assembleDebug
+          ./gradlew testDebug
+
+      - name: Build Rust tool for Android
+        run: |
+          cd android-rust-test-example
+          cargo build --release
+
+      - name: Test Rust tool on Android
+        run: |
+          cd android-rust-test-example
+          cargo test --release
+
