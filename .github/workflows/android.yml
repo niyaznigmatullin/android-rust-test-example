@@ -19,7 +19,7 @@ jobs:
           toolchain: stable
 
       - name: Set up Android SDK
-        uses: actions/setup-android@v2
+        uses: android-actions/setup-android@v2
         with:
           sdk-platform: '29'
           ndk-version: '21.3.6528147'
