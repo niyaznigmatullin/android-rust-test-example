@@ -24,13 +24,42 @@ jobs:
           sdk-platform: '28'
           ndk-version: '21.3.6528147'
 
-      - name: Build Rust tool for Android
+      - name: Set up Android emulator
+        run: echo no | sdkmanager --install "system-images;android-28;google_apis;x86_64"
+
+      - name: Create and start Android emulator
+        run: |
+          echo no | avdmanager create avd --name emulator --package "system-images;android-28;google_apis;x86_64" --device "Nexus 5"
+          emulator -avd emulator -no-window -no-boot-anim -no-audio -wipe-data -gpu swiftshader_indirect &
+
+      - name: Wait for emulator to start
+        run: |
+          emulator_timeout=0
+          while [ $emulator_timeout -le 300 ]; do
+            boot_completed=$(adb shell getprop sys.boot_completed 2>&1 | tr -d '\r')
+            if [[ $boot_completed == "1" ]]; then
+              break
+            fi
+            sleep 1
+            emulator_timeout=$((emulator_timeout + 1))
+          done
+
+      - name: Install Rust components on Android
+        run: |
+          rustup target add aarch64-linux-android
+
+      - name: Build Rust project on Android
         run: |
           cd /home/runner/work/android-rust-test-example/android-rust-test-example
-          cargo build --release
+          cargo build --target aarch64-linux-android --release
 
-      - name: Test Rust tool on Android
+      - name: Push built binary to Android emulator
         run: |
           cd /home/runner/work/android-rust-test-example/android-rust-test-example
-          cargo test --release
+          find target/aarch64-linux-android/release/deps/ -type f -name 'android_rust_test_example-*' -perm /u+x -exec cp {} test-bin \;
+          adb push test-bin /data/local/tmp/
 
+      - name: Run tests on Android emulator
+        run: |
+          adb shell chmod +x /data/local/tmp/test-bin
+          adb shell /data/local/tmp/test-bin
