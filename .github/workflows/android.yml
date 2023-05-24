@@ -26,11 +26,11 @@ jobs:
 
       - name: Build Rust tool for Android
         run: |
-          cd android-rust-test-example
+          cd /home/runner/work/android-rust-test-example/android-rust-test-example
           cargo build --release
 
       - name: Test Rust tool on Android
         run: |
-          cd android-rust-test-example
+          cd /home/runner/work/android-rust-test-example/android-rust-test-example
           cargo test --release
 
