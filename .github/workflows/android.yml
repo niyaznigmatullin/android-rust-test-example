@@ -21,7 +21,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
         with:
-          sdk-platform: '29'
+          sdk-platform: '28'
           ndk-version: '21.3.6528147'
 
       - name: Build Rust tool for Android
