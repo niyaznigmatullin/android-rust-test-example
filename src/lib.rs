@@ -20,5 +20,11 @@ mod tests {
         let me = me.unwrap();
         let fd_count = me.fd_count();
         assert!(fd_count.is_ok());
+        let fd_count = fd_count.unwrap();
+        let fd_count: u64 = fd_count.try_into().unwrap();
+        for f in me.fd().unwrap() {
+            let fd = f.unwrap();
+            println!("{:?} {:?}", fd, fd.mode());
+        }
     }
 }
