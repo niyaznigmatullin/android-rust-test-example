@@ -26,10 +26,12 @@ jobs:
 
       - name: Install Android emulator runner
         uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: '29'
+          avd-name: emulator
 
       - name: Start Android emulator
         run: |
-          avdmanager create avd --name emulator --package "system-images;android-29;google_apis;x86_64" --device "Nexus 5"
           emulator -avd emulator -no-window -no-boot-anim -no-audio -gpu swiftshader_indirect &
 
       - name: Wait for emulator to start
